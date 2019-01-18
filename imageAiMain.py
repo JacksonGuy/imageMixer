@@ -15,15 +15,27 @@ pygame.init()
 screen = pygame.display.set_mode((W_width,W_height))
 screen.set_alpha(None)
 
-for y in range(0,height):
-    for x in range(0,width):
-        RGB = pic.getpixel((x,y))
+class pixel():
+    def __init__(self,x,y,RGB):
+        self.x, self.y = x,y
+        self.RGB = (RGB) #tuple
 
+def make_new_array(picture):
+    x = np.array([[]]) #main array
+    y = np.array([[]]) #new addition to main array
+    for y in range(0,height):
+        for x in range(0,width):
+            RGB = picture.getpixel((x,y))
+            px = pixel(x,y,RGB)
+            y = np.array([[px]])
+            a = np.concatenate((x,y)) #array that is returned
+    return(a)
 
-        #screen.set_at((x,y), RGB)
-
-#pygame.display.flip()
-
+array1 = make_new_array(pic) #array of pixels and their colors for the first pic
+for pixel in array1:
+    screen.set_at((pixel.x,pixel.y), pixel.RGB)
+    pygame.display.blit()
+    
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
