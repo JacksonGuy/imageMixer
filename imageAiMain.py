@@ -1,40 +1,81 @@
 import pyautogui as gui
-import numpy as np
+#import numpy as np
 import os, pygame
 from PIL import Image
 
-imageFile = open("image.txt","w")
-
+"""
+remove this code
 pic = Image.open('image.jpeg')
 pic = pic.convert('RGB')
+pic = pic.resize((800,600))
 
-width,height = pic.size
-W_width, W_height = width,height
+pic1 = Image.open('image1.jpeg')
+pic1 = pic1.convert('RGB')
+pic1 = pic1.resize((800,600))
+"""
+
+width,height = 800,600
 
 pygame.init()
-screen = pygame.display.set_mode((W_width,W_height))
-screen.set_alpha(None)
+screen = pygame.display.set_mode((width,height))
+#screen.set_alpha(None)
 
 class pixel():
     def __init__(self,x,y,RGB):
         self.x, self.y = x,y
         self.RGB = (RGB) #tuple
+        self.RGB = list(self.RGB) #now a list
 
 def make_new_array(picture):
-    x = np.array([[]]) #main array
-    y = np.array([[]]) #new addition to main array
+    a = []
     for y in range(0,height):
         for x in range(0,width):
             RGB = picture.getpixel((x,y))
             px = pixel(x,y,RGB)
-            y = np.array([[px]])
-            a = np.concatenate((x,y)) #array that is returned
+            a.append(px)
     return(a)
 
-array1 = make_new_array(pic) #array of pixels and their colors for the first pic
-for pixel in array1:
-    screen.set_at((pixel.x,pixel.y), pixel.RGB)
-    pygame.display.blit()
+#array1 = make_new_array(pic) #array of pixels and their colors for the first pic
+#array2 = make_new_array(pic1)
+
+pics = []
+for pic in os.listdir("Images"):
+    pic = Image.open("Images/" + str(pic))
+    pic = pic.convert('RGB')
+    pic = pic.resize((800,600))
+    pics.append(pic)
+
+arrayMain = make_new_array(pics[0]) #make array with starting pixels
+pics.remove(pics[0])
+
+def make_new_pic():
+    picPtr = 0
+    for pic in pics: #every pic in list
+        a1 = make_new_array(pic) #make array of pixels from picture
+        pixPtr = 0
+        for pix, pixel in zip(a1, arrayMain): #iterate over every pixel in picture and pixels already in main array
+            pixel.RGB[0] += pix.RGB[0] 
+            pixel.RGB[1] += pix.RGB[1]
+            pixel.RGB[2] += pix.RGB[2]
+
+            pixPtr += 1
+            print("Picture: " + str(picPtr) + ", Pixel: " + str(pixPtr))
+
+make_new_pic()
+
+for pixel in arrayMain: #draw pixels
+    pixel.RGB[0] = pixel.RGB[0]/len(pics)+1
+    pixel.RGB[1] = pixel.RGB[1]/len(pics)+1
+    pixel.RGB[2] = pixel.RGB[2]/len(pics)+1
+    if pixel.RGB[0] > 255: 
+        pixel.RGB[0] = pixel.RGB[0] - (pixel.RGB[0]-255)
+    if pixel.RGB[1] > 255: 
+        pixel.RGB[1] = pixel.RGB[1] - (pixel.RGB[1]-255)
+    if pixel.RGB[2] > 255: 
+        pixel.RGB[2] = pixel.RGB[2] - (pixel.RGB[2]-255)
+    print(pixel.RGB)
+    screen.set_at((pixel.x, pixel.y), pixel.RGB)
+    pygame.display.flip()
     
 while True:
     for event in pygame.event.get():
