@@ -60,7 +60,8 @@ for pixel in arrayMain: #draw pixels
     if pixel.RGB[2] > 255: 
         pixel.RGB[2] = pixel.RGB[2] - (pixel.RGB[2]-255)
     screen.set_at((pixel.x, pixel.y), pixel.RGB)
-    pygame.display.flip()
+    
+pygame.display.flip()
     
 while True:
     for event in pygame.event.get():
